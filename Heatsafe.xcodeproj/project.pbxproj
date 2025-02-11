@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0D0471212D5902C0001128D6 /* LineChartView in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0471202D5902C0001128D6 /* LineChartView */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0D0470EC2D58AFA5001128D6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,22 @@
 		0D0470F52D58AFA5001128D6 /* HeatsafeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeatsafeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0D0471162D58CA86001128D6 /* Exceptions for "Heatsafe" folder in "Heatsafe" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0D0470D82D58AFA3001128D6 /* Heatsafe */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0D0470DB2D58AFA3001128D6 /* Heatsafe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0D0471162D58CA86001128D6 /* Exceptions for "Heatsafe" folder in "Heatsafe" target */,
+			);
 			path = Heatsafe;
 			sourceTree = "<group>";
 		};
@@ -52,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D0471212D5902C0001128D6 /* LineChartView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +130,7 @@
 			);
 			name = Heatsafe;
 			packageProductDependencies = (
+				0D0471202D5902C0001128D6 /* LineChartView */,
 			);
 			productName = Heatsafe;
 			productReference = 0D0470D92D58AFA3001128D6 /* Heatsafe.app */;
@@ -195,6 +214,9 @@
 			);
 			mainGroup = 0D0470D02D58AFA3001128D6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0D04711F2D590295001128D6 /* XCLocalSwiftPackageReference "../../Downloads/LineChartView-main" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0D0470DA2D58AFA3001128D6 /* Products */;
 			projectDirPath = "";
@@ -399,6 +421,11 @@
 				DEVELOPMENT_TEAM = PDC26G258Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Heatsafe/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "We need access to Bluetooth to connect to your Mi Band.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "We need access to your Mi Band's Bluetooth peripherals.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to show your position on the map.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app needs motion access to detect device movement.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,6 +455,11 @@
 				DEVELOPMENT_TEAM = PDC26G258Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Heatsafe/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "We need access to Bluetooth to connect to your Mi Band.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "We need access to your Mi Band's Bluetooth peripherals.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to show your position on the map.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app needs motion access to detect device movement.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -558,6 +590,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0D04711F2D590295001128D6 /* XCLocalSwiftPackageReference "../../Downloads/LineChartView-main" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../Downloads/LineChartView-main";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0D0471202D5902C0001128D6 /* LineChartView */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LineChartView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0D0470D12D58AFA3001128D6 /* Project object */;
 }

@@ -6,56 +6,178 @@
 //
 
 import SwiftUI
-import SwiftData
+import CoreLocation
+import MessageUI
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    @State private var isSheetPresented = false
+    private let locationManager = LocationManager()
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        TabView {
+            HomeView()
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+            
+            HealthView()
+                .tabItem {
+                    Label("Health", systemImage: "heart.fill")
                 }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+            
+            DeviceView()
+                .tabItem {
+                    Label("Device", systemImage: "applewatch")
                 }
-            }
-        } detail: {
-            Text("Select an item")
+            
+            MapView()
+                .tabItem {
+                    Label("Map", systemImage: "map.fill")
+                }
+            
+            ProfileView()
+                .tabItem {
+                    Label("Profile", systemImage: "person.circle")
+                }
         }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+        .accentColor(.cyan)
+        .sheet(isPresented: $isSheetPresented) {
+            SheetView(locationManager: locationManager)
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+        .onShake {
+            isSheetPresented = true
         }
     }
 }
 
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+#Preview(body: {
+    SheetView(locationManager: LocationManager())
+})
+
+// ✅ Sheet ที่จะแสดงขึ้น
+struct SheetView: View {
+    @ObservedObject var locationManager: LocationManager
+    @Environment(\.dismiss) var dismiss
+    @State private var isShowingMessage = false
+    
+    var body: some View {
+        VStack {
+            Text("🚨 SOS Emergency 🚨")
+                .font(.largeTitle)
+                .bold()
+                .foregroundColor(.red)
+                .padding()
+            
+            Text("Share your location or call for help")
+                .font(.headline)
+                .padding(.bottom, 10)
+            
+            // 🔴 ปุ่มโทรฉุกเฉิน
+            Button(action: {
+                callEmergencyNumber()
+            }) {
+                Text("Call Emergency")
+                    .bold()
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)  // ทำให้ปุ่มเต็มความกว้าง
+                    .background(Color.red)
+                    .cornerRadius(10)
+            }
+            .padding(.horizontal)  // ให้เว้นขอบด้านข้างเท่า ๆ กัน
+            
+            Button(action: {
+                isShowingMessage = true
+            }) {
+                Text("Send SOS via iMessage")
+                    .bold()
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)  // ทำให้ปุ่มเต็มความกว้าง
+                    .background(Color.cyan)
+                    .cornerRadius(10)
+            }
+            .padding(.horizontal)  // ให้เว้นขอบด้านข้างเท่า ๆ กัน
+            
+            Spacer()
+                .sheet(isPresented: $isShowingMessage) {
+                    MessageComposeView(location: locationManager.lastLocation)
+                }
+        }
+        .onAppear {
+            locationManager.requestLocation()
+        }
+        .presentationDetents([.medium, .large])
+        .padding(.top,30)
+    }
+    
+    // ฟังก์ชันโทรฉุกเฉิน
+    func callEmergencyNumber() {
+        if let url = URL(string: "tel://0956542656"), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
+    }
+}
+
+// ✅ ส่ง iMessage (MessageUI)
+struct MessageComposeView: UIViewControllerRepresentable {
+    var location: CLLocationCoordinate2D?
+    
+    func makeUIViewController(context: Context) -> MFMessageComposeViewController {
+        let controller = MFMessageComposeViewController()
+        controller.recipients = ["0956542656"]  // เปลี่ยนเป็นเบอร์โทรของผู้ช่วยฉุกเฉิน
+        controller.body = createSOSMessage()
+        controller.messageComposeDelegate = context.coordinator
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: MFMessageComposeViewController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        return Coordinator()
+    }
+    
+    class Coordinator: NSObject, MFMessageComposeViewControllerDelegate {
+        func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+            controller.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    private func createSOSMessage() -> String {
+        if let loc = location {
+            let mapLink = "https://maps.apple.com/?q=\(loc.latitude),\(loc.longitude)"
+            return "🚨 SOS Emergency! My location: \(mapLink)"
+        } else {
+            return "🚨 SOS Emergency! Unable to fetch location."
+        }
+    }
+    
+}
+
+// ✅ ตัวจัดการตำแหน่ง (CoreLocation)
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+    @Published var lastLocation: CLLocationCoordinate2D?
+    
+    override init() {
+        super.init()
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    func requestLocation() {
+        manager.requestWhenInUseAuthorization()
+        manager.startUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        DispatchQueue.main.async {
+            self.lastLocation = location.coordinate
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("⚠️ Location Error: \(error.localizedDescription)")
+    }
 }
